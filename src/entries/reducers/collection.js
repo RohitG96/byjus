@@ -4,7 +4,7 @@ export const initialState = [];
 export default function(state = initialState, action) {
   switch (action.type) {
     case FETCH_JOB_PROFILE_SUCCESS: {
-      return action.payload.expenses;
+      return action.payload.data;
     }
     default:
       return state;

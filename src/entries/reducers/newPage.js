@@ -6,7 +6,7 @@ import {
   } from '../constants';
   export const initialState = {
     status: 'ready',
-    reimbursement: null,
+    profileList: null,
     message: '',
   };
   
@@ -27,8 +27,8 @@ import {
       case FETCH_JOB_PROFILE_SUCCESS: {
         return {
           ...state,
-          status: 'submitted',
-          reimbursement: action.payload.data,
+          status: 'success',
+          profileList: action.payload.data,
           message: 'profiles fetch success',
         };
       }
