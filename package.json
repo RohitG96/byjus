@@ -41,5 +41,6 @@
   },
   "main": "index.js",
   "license": "MIT",
-  "author": "Rohit Gowda <rohit.gowda1996@gmail.com>"
+  "author": "Rohit Gowda <rohit.gowda1996@gmail.com>",
+  "homepage" : "http://RohitG96.github.io/byjus"
 }
