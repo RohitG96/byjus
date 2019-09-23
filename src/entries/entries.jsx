@@ -57,14 +57,6 @@ class Entries extends React.PureComponent {
         ...this.getColumnSearchProps("skills")
       },
       {
-        title: 'Experience',
-        dataIndex: 'experience',
-        sorter: (a, b) => ('' + a.experience).localeCompare(b.experience),
-        width: '15%',
-        sortOrder: this.state.sortedInfo.columnKey === 'experience' && this.state.sortedInfo.order,
-        ...this.getColumnSearchProps("experience")
-      },
-      {
         title: 'Title',
         dataIndex: 'title',
         sorter: (a, b) => ('' + a.title).localeCompare(b.title),
@@ -81,10 +73,18 @@ class Entries extends React.PureComponent {
         ...this.getColumnSearchProps("companyname")
       },
       {
+        title: 'Experience',
+        dataIndex: 'experience',
+        sorter: (a, b) => ('' + a.experience).localeCompare(b.experience),
+        width: '10%',
+        sortOrder: this.state.sortedInfo.columnKey === 'experience' && this.state.sortedInfo.order,
+        ...this.getColumnSearchProps("experience")
+      },
+      {
         title: 'Created At',
         dataIndex: 'created',
         sorter: (a, b) => ('' + a.created).localeCompare(b.created),
-        width: '12%',
+        width: '10%',
         sortOrder: this.state.sortedInfo.columnKey === 'created' && this.state.sortedInfo.order,
         ...this.getColumnSearchProps("created")
       },
@@ -92,9 +92,17 @@ class Entries extends React.PureComponent {
         title: 'Expires At',
         dataIndex: 'enddate',
         sorter: (a, b) => ('' + a.enddate).localeCompare(b.enddate),
-        width: '12%',
+        width: '10%',
         sortOrder: this.state.sortedInfo.columnKey === 'enddate' && this.state.sortedInfo.order,
         ...this.getColumnSearchProps("enddate")
+      },
+      {
+        title: 'Source',
+        dataIndex: 'source',
+        sorter: (a, b) => ('' + a.source).localeCompare(b.source),
+        width: '10%',
+        sortOrder: this.state.sortedInfo.columnKey === 'source' && this.state.sortedInfo.order,
+        ...this.getColumnSearchProps("source")
       }
     ];
     return columns
