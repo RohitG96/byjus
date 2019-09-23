@@ -81,6 +81,14 @@ class Entries extends React.PureComponent {
         ...this.getColumnSearchProps("experience")
       },
       {
+        title: 'Source',
+        dataIndex: 'source',
+        sorter: (a, b) => ('' + a.source).localeCompare(b.source),
+        width: '10%',
+        sortOrder: this.state.sortedInfo.columnKey === 'source' && this.state.sortedInfo.order,
+        ...this.getColumnSearchProps("source")
+      },
+      {
         title: 'Created At',
         dataIndex: 'created',
         sorter: (a, b) => ('' + a.created).localeCompare(b.created),
@@ -95,14 +103,6 @@ class Entries extends React.PureComponent {
         width: '10%',
         sortOrder: this.state.sortedInfo.columnKey === 'enddate' && this.state.sortedInfo.order,
         ...this.getColumnSearchProps("enddate")
-      },
-      {
-        title: 'Source',
-        dataIndex: 'source',
-        sorter: (a, b) => ('' + a.source).localeCompare(b.source),
-        width: '10%',
-        sortOrder: this.state.sortedInfo.columnKey === 'source' && this.state.sortedInfo.order,
-        ...this.getColumnSearchProps("source")
       }
     ];
     return columns
