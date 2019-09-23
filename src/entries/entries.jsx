@@ -1,98 +1,250 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Spin, Col, Row } from 'antd';
-// import 'antd/dist/antd.css';
-// import { Link } from 'react-router-dom';
-// import initNewPage from './actions/initNewPage';
+// import * as moment from 'moment';
+import { Input, Button, Icon } from 'antd';
+import Highlighter from 'react-highlight-words';
 import fetchJobProfiles from './actions/fetchJobProfiles';
+// import { Collapse } from 'antd';
 
-import { Table, Divider, Tag } from 'antd';
 
-const { Column, ColumnGroup } = Table;
 
-const data = [
-  {
-    key: '1',
-    firstName: 'John',
-    lastName: 'Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-    tags: ['nice', 'developer'],
-  },
-  {
-    key: '2',
-    firstName: 'Jim',
-    lastName: 'Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-    tags: ['loser'],
-  },
-  {
-    key: '3',
-    firstName: 'Joe',
-    lastName: 'Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-    tags: ['cool', 'teacher'],
-  },
-];
+import { Table } from 'antd';
+// const { Panel } = Collapse;
 
-class Entries extends React.PureComponent{
-    state = {
-      fetch:false
+// const data = [
+//   {
+//     applylink: "https://www.techgig.com/jobs/Senior-Knowledge-Analyst-CKA/59843",
+//     companyname: "Boston Consultancy Group",
+//     created: "",
+//     enddate: "",
+//     experience: "4-6 yrs",
+//     jd: "",
+//     location: "Bengaluru/Bangalore",
+//     salary: "",
+//     skills: "cassandra",
+//     source: "techgig",
+//     startdate: "",
+//     timestamp: 1528959791.958316,
+//     title: "Senior Knowledge Analyst CKA",
+//     type: "",
+//     __v: 0,
+//     _id: "5b2b8a98263a5020388e87dc"
+//   }
+// ];
+
+class Entries extends React.PureComponent {
+  state = {
+    fetch: false,
+    sortedInfo: { columnKey: "location", order: "descend" },
+  }
+  getColumns() {
+    let columns = [
+      {
+        title: 'Loacation',
+        dataIndex: 'location',
+        sorter: (a, b) => ('' + a.location).localeCompare(b.location),
+        sortOrder: this.state.sortedInfo.columnKey === 'location' && this.state.sortedInfo.order,
+        width: '15%',
+        ...this.getColumnSearchProps("location")
+      },
+      {
+        title: 'Skills',
+        dataIndex: 'skills',
+        sorter: (a, b) => ('' + a.skills).localeCompare(b.skills),
+        width: '15%',
+        sortOrder: this.state.sortedInfo.columnKey === 'skills' && this.state.sortedInfo.order,
+        ...this.getColumnSearchProps("skills")
+      },
+      {
+        title: 'Experience',
+        dataIndex: 'experience',
+        sorter: (a, b) => ('' + a.experience).localeCompare(b.experience),
+        width: '15%',
+        sortOrder: this.state.sortedInfo.columnKey === 'experience' && this.state.sortedInfo.order,
+        ...this.getColumnSearchProps("experience")
+      },
+      {
+        title: 'Title',
+        dataIndex: 'title',
+        sorter: (a, b) => ('' + a.title).localeCompare(b.title),
+        width: '15%',
+        sortOrder: this.state.sortedInfo.columnKey === 'title' && this.state.sortedInfo.order,
+        ...this.getColumnSearchProps("title")
+      },
+      {
+        title: 'Company Name',
+        dataIndex: 'companyname',
+        sorter: (a, b) => ('' + a.companyname).localeCompare(b.companyname),
+        width: '15%',
+        sortOrder: this.state.sortedInfo.columnKey === 'companyname' && this.state.sortedInfo.order,
+        ...this.getColumnSearchProps("companyname")
+      },
+      {
+        title: 'Created At',
+        dataIndex: 'created',
+        sorter: (a, b) => ('' + a.created).localeCompare(b.created),
+        width: '12%',
+        sortOrder: this.state.sortedInfo.columnKey === 'created' && this.state.sortedInfo.order,
+        ...this.getColumnSearchProps("created")
+      },
+      {
+        title: 'Expires At',
+        dataIndex: 'enddate',
+        sorter: (a, b) => ('' + a.enddate).localeCompare(b.enddate),
+        width: '12%',
+        sortOrder: this.state.sortedInfo.columnKey === 'enddate' && this.state.sortedInfo.order,
+        ...this.getColumnSearchProps("enddate")
+      }
+    ];
+    return columns
+  }
+
+  getLocationFilters(index) {
+    let hashes = this.props.newPage.profileList.reduce((hashes, val) => {
+      hashes[val[index]] = val[index]
+      return hashes
+    })
+    console.log(hashes)
+    return Object.keys(hashes).map((val) => {
+      return { type: val, name: val || "undefined" }
+    })
+
+
+  }
+
+  componentDidMount() {
+    this.props.fetchJobProfiles();
+  }
+
+  sortOnJobLocation() {
+    this.setState({ ...this.state, data: this.props.newPage.sorted(this.state.params) })
+  }
+
+  handleChange = (pagination, filters, sorter) => {
+    console.log('Various parameters', pagination, filters, sorter);
+    this.setState({
+      ...this.state,
+      sortedInfo: sorter,
+    });
+
+  };
+
+  getColumnSearchProps = dataIndex => ({
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+      <div style={{ padding: 8 }}>
+        <Input
+          ref={node => {
+            this.searchInput = node;
+          }}
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onPressEnter={() => this.handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{ width: 188, marginBottom: 8, display: 'block' }}
+        />
+        <Button
+          type="primary"
+          onClick={() => this.handleSearch(selectedKeys, confirm, dataIndex)}
+          icon="search"
+          size="small"
+          style={{ width: 90, marginRight: 8 }}
+        >
+          Search
+        </Button>
+        <Button onClick={() => this.handleReset(clearFilters)} size="small" style={{ width: 90 }}>
+          Reset
+        </Button>
+      </div>
+    ),
+    filterIcon: filtered => (
+      <Icon type="search" style={{ color: filtered ? '#1890ff' : undefined }} />
+    ),
+    onFilter: (value, record) => { return record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()) },
+    onFilterDropdownVisibleChange: visible => {
+      if (visible) {
+        setTimeout(() => this.searchInput.select());
+      }
+    },
+    render: text => (
+      <Highlighter
+        highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+        searchWords={[this.state.searchText]}
+        autoEscape
+        textToHighlight={text.toString()}
+      />
+    ),
+  });
+
+  handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+    let value = selectedKeys[0]
+    console.log("dataindex", dataIndex, value)
+    let count = this.props.newPage.profileList.reduce((acc, record) => {
+      if (record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()))
+        acc++
+      return acc
+    }, 0)
+    console.log("count", count)
+    this.setState({ ...this.state, searchText: selectedKeys[0], count: count });
+  };
+
+  handleReset = clearFilters => {
+    clearFilters();
+    this.setState({ searchText: '' });
+  };
+
+  render() {
+
+    console.log(this.props.collection)
+    if (this.props.newPage.status === "loading" || this.props.newPage.status === "ready")
+      return (<div><br /><Spin size="large" />Loading</div>)
+    if (this.props.newPage.status === "error")
+      return (<h1> Error </h1>)
+    if (this.props.newPage.status === "success" && this.state.fetch === false) {
+      this.setState({ ...this.state, fetch: true, count: this.props.newPage.profileList.length, expiring: false })
     }
-    componentDidMount() {
-        this.props.fetchJobProfiles();
-      }
-
-    render(){
-        console.log(this.props.collection)
-        if(this.props.newPage.status === "loading" || this.props.newPage.status === "ready")
-        return (<div><br/><Spin size="large" />Loading</div>)
-        if(this.props.newPage.status === "error")
-        return (<h1> Error </h1>)
-        // return (<Row type="flex"><Col span={4}></Col><Col span={16}><h1>Entries</h1></Col><Col span={4}></Col></Row>)
-        // return (<div><Layout>
-        //   <Header>Header</Header>
-        //   <Content>Content</Content>
-        //   <Footer>Footer</Footer>
-        // </Layout></div>)
-        return (
-          <Table dataSource={data}>
-          <ColumnGroup title="Name">
-            <Column title="First Name" dataIndex="firstName" key="firstName" />
-            <Column title="Last Name" dataIndex="lastName" key="lastName" />
-          </ColumnGroup>
-          <Column title="Age" dataIndex="age" key="age" />
-          <Column title="Address" dataIndex="address" key="address" />
-          <Column
-            title="Tags"
-            dataIndex="tags"
-            key="tags"
-            render={tags => (
-              <span>
-                {tags.map(tag => (
-                  <Tag color="blue" key={tag}>
-                    {tag}
-                  </Tag>
-                ))}
-              </span>
-            )}
-          />
-          <Column
-            title="Action"
-            key="action"
-            render={(text, record) => (
-              <span>
-                <a>Invite {record.lastName}</a>
-                <Divider type="vertical" />
-                <a>Delete</a>
-              </span>
-            )}
-          />
-        </Table>
-        )
-      }
+    return (
+      <div>
+        {/* <Row>
+          <Collapse accordion>
+            <Panel header="CLick here to see expiring job list" key="1">
+              <Row>
+                <Col span={2}></Col>
+                <Col span={20}>
+                  <Table
+                    columns={this.getColumns()}
+                    rowKey={record => record._id}
+                    dataSource={this.props.newPage.profileList}
+                    // pagination={this.state.pagination}
+                    loading={this.state.loading}
+                    onChange={this.handleChange}
+                  />
+                </Col>
+                <Col span={2}></Col>
+              </Row>
+            </Panel>
+          </Collapse>
+        </Row> */}
+        <Row>
+          <h1>Total Records found: {this.state.count}</h1>
+        </Row>
+        <Row>
+          <Col span={2} />
+          <Col span={20}>
+            <Table
+              columns={this.getColumns()}
+              rowKey={record => record._id}
+              dataSource={this.props.newPage.profileList}
+              // pagination={this.state.pagination}
+              loading={this.state.loading}
+              onChange={this.handleChange}
+            />
+          </Col>
+        </Row>
+      </div>
+    );
+  }
 
 }
 
